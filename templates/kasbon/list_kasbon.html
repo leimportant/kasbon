@@ -1,0 +1,83 @@
+
+{% extends 'base.html' %}
+
+
+{% block content %}
+<div class="container">
+    <h1>Daftar Kasbon</h1>
+
+    <!-- Add Kasbon Button -->
+    <a href="{{ url_for('add_kasbon') }}" class="btn btn-primary mb-3">
+        Tambah Kasbon
+    </a>
+
+    <!-- Filter Inputs -->
+    <div class="mb-3">
+        <input type="text" id="searchInput" class="form-control" placeholder="Filter by Nama Peminjam">
+    </div>
+    <div class="mb-3">
+
+        <input type="date" id="dateInput" class="form-control">
+    </div>
+
+
+    <div class="row">
+        {% for kasbon in kasbons %}
+        <div class="col-md-12">
+            <div class="card mb-6 d-flex">
+                <div class="card-body d-flex justify-content-between">
+                    <div>
+                        <p style="font-size: medium;"></p><strong>{{ kasbon.id }} </strong> </p>
+                        <p style="font-size: small;">
+                            {{ kasbon.created_date.strftime('%d/%m/%Y %H:%M') }}
+                        </p> 
+                        <div class="card-text">
+                            <span>{{ kasbon.nama }}</span>
+                            <p>
+                                <strong>Jumlah:</strong> Rp. {{ kasbon.jumlah }} <br>
+                                <strong>Keterangan:</strong> {{ kasbon.keterangan }}
+                            </p>
+                        </div>
+                        
+                    </div>
+                    <div class="text-end">
+                        <a href="{{ url_for('edit_kasbon', kasbon_id=kasbon.id) }}" class="btn btn-link" title="Edit">
+                            <i class="bi bi-pencil"></i>
+                        </a>
+                    </div>
+                    
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+<!-- JavaScript for filtering functionality -->
+<script>
+    const searchInput = document.getElementById('searchInput');
+    const dateInput = document.getElementById('dateInput');
+    const kasbonList = document.getElementById('kasbonList').getElementsByTagName('li');
+
+    // Filter function
+    function filterKasbons() {
+        const searchValue = searchInput.value.toLowerCase();
+        const selectedDate = dateInput.value;
+
+        Array.from(kasbonList).forEach(kasbon => {
+            const nama = kasbon.getAttribute('data-nama').toLowerCase();
+            const tanggal = kasbon.getAttribute('data-tanggal');
+
+            // Check if the kasbon matches the search input and the selected date
+            const matchesSearch = nama.includes(searchValue);
+            const matchesDate = selectedDate ? tanggal === selectedDate : true; // If no date selected, consider it a match
+
+            // Toggle visibility based on matches
+            kasbon.style.display = (matchesSearch && matchesDate) ? 'flex' : 'none';
+        });
+    }
+
+    // Event listeners for filter inputs
+    searchInput.addEventListener('input', filterKasbons);
+    dateInput.addEventListener('change', filterKasbons);
+</script>
+
+{% endblock %}

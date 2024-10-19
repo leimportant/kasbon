@@ -1,0 +1,34 @@
+<!-- templates/result_qr.html -->
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-12 text-center">
+            <h1 class="text-primary">QR Code Result</h1>
+            <p class="lead">Data from the scanned QR code is displayed below:</p>
+        </div>
+
+        <div class="col-12 col-md-8 text-center">
+            <!-- Display the QR data -->
+            <div class="alert alert-info">
+                <strong>QR Data:</strong> {{ qr_data }}
+            </div>
+
+            <!-- Action buttons: Approve or Reject -->
+            <div class="mt-4">
+                <button class="btn btn-success" onclick="handleAction('approve')">Approve</button>
+                <button class="btn btn-danger" onclick="handleAction('reject')">Reject</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    function handleAction(action) {
+        alert(`You chose to ${action} the QR code with data: {{ qr_data }}`);
+        // Here you can add logic to handle the action (e.g., send to backend)
+    }
+</script>
+
+{% endblock %}

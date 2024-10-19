@@ -1,0 +1,144 @@
+.header {
+    background-color: #007bff;
+    color: white;
+    padding: 10px 15px;
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+}
+
+.header h3 {
+    margin: 0;
+}
+
+#sidebarMenu {
+    height: 100%;
+    width: 0;
+    position: fixed;
+    top: 0;
+    left: 0;
+    background-color: #343a40;
+    overflow-x: hidden;
+    transition: 0.5s;
+    padding-top: 60px;
+    z-index: 1000;
+}
+
+#sidebarMenu a {
+    padding: 10px 15px;
+    text-decoration: none;
+    color: white;
+    display: block;
+    transition: 0.3s;
+}
+
+#sidebarMenu a:hover {
+    background-color: #495057;
+}
+
+.side-menu .close-btn {
+    position: absolute;
+    top: 10px;
+    right: 25px;
+    font-size: 36px;
+}
+
+/* Style konten agar tidak tumpang tindih dengan side menu */
+.content {
+    transition: margin-left 0.5s;
+    padding: 20px;
+}
+
+/* Style untuk bottom navigation */
+.bottom-nav {
+    position: fixed;
+    bottom: 0;
+    width: 100%;
+    height: 70px;
+    background-color: #fff;
+    border-radius: 35px 35px 0 0;
+    box-shadow: 0 -5px 10px rgba(0, 0, 0, 0.1);
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    z-index: 1000;
+}
+
+.bottom-nav a {
+    color: #6c757d;
+    text-decoration: none;
+    font-size: 24px;
+    padding: 15px;
+}
+
+.bottom-nav a.active {
+    color: #007bff;
+}
+
+/* Raised middle icon (QR) */
+.bottom-nav .qr-icon {
+    position: relative;
+    top: -20px; /* This raises the QR icon */
+    background-color: #007bff;
+    color: white;
+    padding: 18px;
+    border-radius: 50%;
+    box-shadow: 0 10px 15px rgba(0, 0, 0, 0.2);
+}
+
+/* Style for QR button when clicked */
+.bottom-nav .qr-icon:active {
+    transform: scale(0.9);
+}
+.side-menu {
+    height: 100%;
+    width: 0;
+    position: fixed;
+    top: 0;
+    left: 0;
+    background-color: #343a40;
+    overflow-x: hidden;
+    transition: 0.5s;
+    padding-top: 60px;
+    z-index: 1000;
+}
+
+.side-menu a {
+    padding: 10px 15px;
+    text-decoration: none;
+    font-size: 16px;
+    color: white;
+    display: block;
+    transition: 0.3s;
+}
+
+.side-menu a:hover {
+    background-color: #495057;
+}
+
+.side-menu .close-btn {
+    position: absolute;
+    top: 10px;
+    right: 25px;
+    font-size: 36px;
+}
+
+/* Style konten agar tidak tumpang tindih dengan side menu */
+.content {
+    transition: margin-left 0.5s;
+    padding: 20px;
+}
+
+.header {
+    background-color: #495057;
+    padding-left: 10px;
+}
+
+canvas {
+    display: none;
+    /* Sembunyikan canvas, hanya digunakan untuk scanning */
+}
+
+h1 {
+    margin-top: 10px;
+}

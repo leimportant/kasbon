@@ -1,0 +1,22 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container mt-5">
+    <h1>Edit Kasbon</h1>
+    <form action="{{ url_for('edit_kasbon', kasbon_id=kasbon.id) }}" method="POST">
+        <div class="mb-3">
+            <label for="nama" class="form-label">Nama Peminjam</label>
+            <input type="text" class="form-control" name="nama" value="{{ kasbon.nama }}" placeholder="Masukkan nama" required>
+        </div>
+        <div class="mb-3">
+            <label for="jumlah" class="form-label">Jumlah Kasbon</label>
+            <input type="number" class="form-control" name="jumlah" value="{{ kasbon.jumlah }}" placeholder="Masukkan jumlah" required>
+        </div>
+        <div class="mb-3">
+            <label for="keterangan" class="form-label">Keterangan</label>
+            <input type="text" class="form-control" name="keterangan" value="{{ kasbon.keterangan }}" placeholder="Keterangan" required>
+        </div>
+        <button type="submit" class="btn btn-primary">Update Kasbon</button>
+    </form>
+</div>
+{% endblock %}

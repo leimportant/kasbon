@@ -1,0 +1,202 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+{% set title = 'Scan QR' %}
+<style>
+    /* Base styles for all screens */
+    #qr-video {
+        width: 100%;
+        height: 90%;
+        max-width: 400px;
+        border: 2px solid transparent;
+        border-radius: 10px;
+        object-fit: cover;
+        position: relative;
+        z-index: 1;
+        margin: 0 auto;
+    }
+
+    /* Scanner overlay */
+    .scanner-overlay {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        width: 250px;
+        height: 250px;
+        border: 1px solid rgba(255, 255, 255, 0.8);
+        border-radius: 15px;
+        transform: translate(-50%, -50%);
+        z-index: 2;
+        overflow: hidden;
+    }
+
+    /* Scanning line animation */
+    .scanner-line {
+        position: absolute;
+        width: 100%;
+        height: 3px;
+        background-color: rgb(46, 79, 211);
+        animation: moveScanner 2s infinite ease-in-out;
+        top: 0;
+    }
+
+    @keyframes moveScanner {
+        0% {
+            top: 0;
+        }
+
+        100% {
+            top: 100%;
+        }
+    }
+
+    #result {
+        margin-top: 20px;
+    }
+
+    /* Styles for larger screens (e.g., laptops/desktops) */
+    @media (min-width: 768px) {
+        #qr-video {
+            max-width: 600px; /* Larger video size for laptops */
+            height: 100%;
+        }
+
+        .scanner-overlay {
+            width: 300px;
+            height: 300px; /* Bigger scanner box for larger screens */
+            top: 35%;
+        }
+
+        .scanner-line {
+            height: 5px; /* Thicker scan line for visibility on large screens */
+        }
+    }
+
+    /* Styles for smaller screens (e.g., phones/tablets) */
+    @media (max-width: 767px) {
+        #qr-video {
+            max-width: 90%; /* Shrink the video slightly to fit smaller screens */
+        }
+
+        .scanner-overlay {
+            width: 200px;
+            height: 200px; /* Smaller scanner box for small screens */
+        }
+
+        .scanner-line {
+            height: 3px; /* Normal scan line for small screens */
+        }
+    }
+</style>
+
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-12 text-center">
+            <p class="lead">Arahkan kamera ke QR Code untuk melakukan pemindaian.</p>
+        </div>
+
+        <div class="col-12 col-md-8 text-center position-relative">
+            <!-- Video element for the camera feed -->
+            <video id="qr-video" autoplay playsinline></video>
+
+            <!-- Canvas element for scanning -->
+            <canvas id="qr-canvas"></canvas>
+
+            <!-- Scanner overlay with animation -->
+            <div class="scanner-overlay">
+                <div class="scanner-line"></div>
+            </div>
+
+            <!-- Result display -->
+            <p id="result" class="alert alert-info">Arahkan kamera ke QR code...</p>
+        </div>
+    </div>
+</div>
+
+<!-- jsQR library (offline) -->
+<script src="{{ url_for('static', filename='js/jsQR.js') }}"></script>
+<script>
+    const videoElement = document.getElementById('qr-video');
+    const canvasElement = document.getElementById('qr-canvas');
+    const resultElement = document.getElementById('result');
+    const canvas = canvasElement.getContext('2d', { willReadFrequently: true });
+    let isScanning = true; // Add a flag to control scanning
+
+    // Access camera
+    navigator.mediaDevices.getUserMedia({ video: { facingMode: "environment" } })
+        .then(function (stream) {
+            videoElement.srcObject = stream;
+        })
+        .catch(function (error) {
+            console.error("Camera access denied:", error);
+            resultElement.textContent = "Kamera tidak tersedia atau akses ditolak.";
+            resultElement.classList.remove('alert-info');
+            resultElement.classList.add('alert-danger');
+        });
+
+    // QR Code scanning function
+    function scanQRCode() {
+        if (!isScanning) return;  // Stop scanning if flag is set to false
+
+        // Ensure canvas is properly sized to the video feed
+        canvasElement.width = videoElement.videoWidth;
+        canvasElement.height = videoElement.videoHeight;
+
+        // Draw the video frame to the canvas
+        canvas.drawImage(videoElement, 0, 0, canvasElement.width, canvasElement.height);
+
+        // Get image data from the canvas
+        const imageData = canvas.getImageData(0, 0, canvasElement.width, canvasElement.height);
+
+        // Attempt to detect QR code using jsQR
+        const qrCode = jsQR(imageData.data, canvasElement.width, canvasElement.height);
+
+        if (qrCode) {
+            // QR code found
+            resultElement.textContent = `QR Code: ${qrCode.data}`;
+            resultElement.classList.remove('alert-info');
+            resultElement.classList.add('alert-success');
+
+            // Set the scanning flag to false to prevent repeated scans while processing
+            isScanning = false;
+
+            // Send data to backend
+            fetch('/submit_qr', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ qr_data: qrCode.data })
+            })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.redirect_url) {
+                        window.location.href = data.redirect_url; // Redirect to result page
+                    }
+                    // After handling the data, resume scanning after a short delay
+                    setTimeout(() => {
+                        resultElement.textContent = 'Arahkan kamera ke QR code...';
+                        resultElement.classList.remove('alert-success');
+                        resultElement.classList.add('alert-info');
+                        isScanning = true;  // Resume scanning
+                    }, 3000);  // 3-second delay before resuming scanning
+                })
+                .catch((error) => {
+                    console.error('Error:', error);
+                });
+
+            return;  // Stop further scanning temporarily while processing the detected QR code
+        }
+
+        // If no QR code is found, continue scanning
+        requestAnimationFrame(scanQRCode);
+    }
+
+    // Start scanning when video starts playing
+    videoElement.addEventListener('play', () => {
+        requestAnimationFrame(scanQRCode);
+    });
+</script>
+
+{% endblock %}

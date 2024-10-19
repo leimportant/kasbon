@@ -1,0 +1,53 @@
+{% extends 'base.html' %}
+
+{% block content %}
+{% set title = 'Kasbon' %}
+<div class="container">
+    <h1>Tambah Kasbon</h1>
+    <form action="{{ url_for('add_kasbon') }}" method="POST">
+        <div class="mb-3">
+            <label for="nama" class="form-label">Nama Peminjam</label>
+            <input type="text" class="form-control" name="nama" placeholder="Masukkan nama" required>
+        </div>
+        <div class="mb-3">
+            <label for="jumlah" class="form-label">Jumlah Kasbon</label>
+            <input type="text" class="form-control" name="jumlah" id="jumlah" placeholder="Masukkan jumlah" required>
+        </div>
+        <div class="mb-3">
+            <label for="keterangan" class="form-label">Keterangan</label>
+            <input type="text" class="form-control" name="keterangan" placeholder="Keterangan" required>
+        </div>
+        <button type="submit" class="btn btn-primary">Tambah Kasbon</button>
+    </form>
+</div>
+<!-- JavaScript to format input as number with thousands separator -->
+<script>
+    const jumlahInput = document.getElementById('jumlah');
+
+    // Format input value to number with thousands separator
+    jumlahInput.addEventListener('input', function (e) {
+        let value = e.target.value;
+
+        // Remove all non-numeric characters
+        value = value.replace(/[^0-9]/g, '');
+
+        // If there is a value, format it
+        if (value) {
+            // Format with thousands separator
+            value = Number(value).toLocaleString('id-ID');  // Use 'id-ID' for Indonesian number format
+
+            // Set formatted value back to the input field
+            e.target.value = value;
+        } else {
+            e.target.value = ''; // Clear the input if no valid number
+        }
+    });
+
+    // Prevent form submission with a formatted number value
+    document.getElementById('kasbonForm').addEventListener('submit', function (e) {
+        // Remove formatting before sending the data
+        jumlahInput.value = jumlahInput.value.replace(/[^\d]/g, '');
+    });
+</script>
+
+{% endblock %}
